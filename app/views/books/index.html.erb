@@ -1,4 +1,22 @@
 <h1>家計簿</h1>
+
+<div class="card">
+  <div class="card-body">
+    <%= form_with method: "get", local: true do |f| %>
+      <div class="form-row">
+        <div class="col">
+          <%= f.number_field "year", placeholder: "年度を入力", class: "form-control" %>
+        </div>
+        <div class="col">
+          <%= f.number_field "month", placeholder: "対象月を入力", class: "form-control" %>
+        </div>
+        <div class="col">
+          <%= f.submit "検索", class: "btn btn-primary" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
 <table>
 <table class="table table-striped">
   <tr>
@@ -7,10 +25,18 @@
     <th>科目</th>
     <th>金額</th>
   </tr>
+  <% a = 0 %>
+    <% b = 0 %>
   <% @books.each do |book| %>
     <tr>
       <td><%= book.year %>年<%= book.month %>月</td>
-      <td><%= book.inout %></td>
+      <td>
+      <%= case book.inout
+      when 1 then '収入'
+      when 2 then '支出'
+      else '不明'
+      end %>
+      </td>
       <td><%= book.category %></td>
       <td><%= book.amount %>万円</td>
       <td>
@@ -21,6 +47,23 @@
     
     </tr>
     
+    <% if book.inout == 1 %>
+      <% a += book.amount %>
+    <% else %>
+      <% b += book.amount %>
+    <% end %>
+    
   <% end %>
+  <tr>
+    <td>収入合計<%= a %>万円</td>
+    <td>支出合計<%= b %>万円</td>
+    <td>合計</td>
+    <td><%= a - b %>万円</td>
+    <td></td>
+  </tr>
+</table>
+
+
+
   <%= link_to "新規登録", new_book_path, class: "btn btn-warning" %>
 </table>

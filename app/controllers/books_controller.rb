@@ -1,9 +1,11 @@
 class BooksController < ApplicationController
 
-  before_action :set_book, only: [:show, :edit, :update, :destroy]
+    before_action :set_book, only: [:show, :edit, :update, :destroy]
 
     def index
         @books = Book.all
+        @books = @books.where(year: params[:year]) if params[:year].present?
+        @books = @books.where(month: params[:month]) if params[:month].present?
     end
 
     def show
@@ -15,11 +17,11 @@ class BooksController < ApplicationController
     end
 
     def create
-        book_params = params.require(:book).permit(:year, :month, :inout, :category, :amount)
+       
     @book = Book.new(book_params)
       if @book.save
-        flash[:notice] = "家計簿にデータを1件登録しました"
-        redirect_to books_path
+        flash[:notice] = "家計簿に#{@book.year}年#{@book.month}月#{@book.category}を登録しました"
+        redirect_to 
       else
        flash.now[:alert] = "登録に失敗しました"
        render :new
@@ -32,10 +34,10 @@ class BooksController < ApplicationController
 
     def update
         
-        book_params = params.require(:book).permit(:year, :month, :inout, :category, :amount)
+        
         if @book.update(book_params)
           flash[:notice] = "データを一件更新しました"
-          redirect_to books_path
+          redirect_to book_path
         else
           flash.now[:notice] = "更新に失敗しました"
           render :edit
@@ -52,8 +54,11 @@ class BooksController < ApplicationController
     private
 
     def set_book
-      @book = find(params[:id])
+      @book = Book.find(params[:id])
     end
-    
+
+    def book_params
+      params.require(:book).permit(:year, :month, :inout, :category, :amount)
+    end
 
 end
